@@ -1,2 +1,2 @@
 # Library-Management-Project
-Function repository for the library management project. Enter the codespace by clicking "Code" > "Codespace" > then click on the file name
+Function repository for the library management project. Enter the codespace by clicking the green "Code" button > "Codespace" > then click on "project-codespace"
