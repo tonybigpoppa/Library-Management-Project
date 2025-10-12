@@ -35,9 +35,11 @@ def overdue_fine(days_over: int, fine = 0.25, max_days = 14):
         raise ValueError("Please re-run the script and enter a number.")
     
     if days_over < max_days:
-        return f"This users fine is: {days_over * fine}"
+        return f"This users fine is: ${days_over * fine}"
+    elif days_over > 31:
+        return f"This book is missing."
     else:
-        return f"This user has hit the maximum fine of {max_days * fine}"
+        return f"This user has hit the maximum fine of ${max_days * fine}"
     
 """ Test case """
 overdue_fine(days_over)
@@ -89,3 +91,32 @@ def add_book(new_title, new_author, new_isbn, titles, authors, isbn, is_checked_
 add_book(new_title, new_author, new_isbn, titles, authors, isbn, is_checked_out)
 
 # 3: Declare book missing
+
+def missing(days_over = int, missing = 31):
+    """
+    Create the circumstances for declaring a book as missing. 
+    This would be when the library sends notices to households
+    associated with the missing book and considers finding 
+    other ways of collecting the book.
+
+    days_over = the same value as before
+
+    missing = the threshold for declaring a book missing
+
+    """
+    try:
+        days_over = int(days_over)
+    except:
+        raise TypeError("Incorrect input.")
+    
+    if days_over < 60:
+        return f"Book has been missing for {days_over - missing} days. Consider setting a overdue letter to the checkee. {overdue_fine(days_over)}"
+    elif 61 < days_over < 120:
+        return f"Book has been missing for {days_over - missing} days. A second letter must be sent. {overdue_fine(days_over)}"
+    elif days_over > 120:
+        return f"Book has been missing for {days_over - missing} days. The book is now considered stolen and should be collected on or paid for. {overdue_fine(days_over)}"
+    else:
+        return f"Book not missing yet."
+    
+""" Test Case """
+missing(days_over)
