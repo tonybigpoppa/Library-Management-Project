@@ -35,6 +35,7 @@ Usage example for Key functions:
 
 
 Function library overview and organization:
+
 calculate_due_date(checkout_date, loan_period_days=14)	Calculates the due date for borrowed items.
 due_status(days_out, max_days=14)	Determines whether an item is overdue or on time.
 get_patron_info(patron_id, name, age, gender)	Returns a patron’s ID, name, age, and gender.
