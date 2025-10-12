@@ -31,8 +31,9 @@ Usage example for Key functions:
 1. calculating due date
    from library_functions import calculate_due_date
    print(calculate_due_date("2025-10-12", 14))
-[ everyone insert one of their functions here]
-
+2. add book
+    important for when the library buys new books.
+    uses and appends several lists responsible for keeping the library.
 
 Function library overview and organization:
 
