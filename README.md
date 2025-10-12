@@ -41,7 +41,7 @@ calculate_due_date(checkout_date, loan_period_days=14)	Calculates the due date f
 due_status(days_out, max_days=14)	Determines whether an item is overdue or on time.
 get_patron_info(patron_id, name, age, gender)	Returns a patron’s ID, name, age, and gender.
 remove_book(titles, authors, is_checked_out, index)	Removes a book from records and keeps lists aligned.
-[everyone insert functions here]
+[insert functions here]
 
 Contribution Guidelines for all Team Members:
 1. Add descriptive comments and docstrings to your code.
