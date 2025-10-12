@@ -37,7 +37,7 @@ Usage example for Key functions:
 3. reserve book
    reservations = {
     "b001": {"user_id": "u001", "due_date": "2025-10-18"}
-   }
+   }.
 
 Function library overview and organization:
 
@@ -45,7 +45,7 @@ calculate_due_date(checkout_date, loan_period_days=14)	Calculates the due date f
 due_status(days_out, max_days=14)	Determines whether an item is overdue or on time.
 get_patron_info(patron_id, name, age, gender)	Returns a patron’s ID, name, age, and gender.
 remove_book(titles, authors, is_checked_out, index)	Removes a book from records and keeps lists aligned.
-reserve_book(user id, book id, reservations) Lets the user reserve a book for a certain of days and keeps track of who reserved the book & wheb it's due.
+reserve_book(user id, book id, reservations) Lets the user reserve a book for a certain of days and keeps track of who reserved the book & when it's due.
 [insert functions here]
 
 Contribution Guidelines for all Team Members:
