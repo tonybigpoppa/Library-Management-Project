@@ -8,7 +8,7 @@ Name	Role	Responsibilities:
 [Member 1]	Project Lead / Coordinator	Oversees the overall project, assigns tasks, manages timeline, and ensures all requirements are met.
 [Member 2]	Lead Developer	Designs and implements the main Python classes and core logic (book, member, and lending functions).
 [Member 3]	Data Manager	Manages datasets, validates input/output, and ensures data consistency across modules.
-[Member 4]	Tester / Quality Assurance	Creates and executes test cases, ensures code reliability, and handles debugging.
+[Anthony Palma]	Tester / Quality Assurance	Creates and executes test cases, ensures code reliability, and handles debugging.
 [Darian La]	Documentation & Git Manager	Maintains README, docstrings, and handles Git commits, version control, and pull requests.
 
 Domain Focus
