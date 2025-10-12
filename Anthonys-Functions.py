@@ -90,6 +90,8 @@ def add_book(new_title, new_author, new_isbn, titles, authors, isbn, is_checked_
 """ Test case """
 add_book(new_title, new_author, new_isbn, titles, authors, isbn, is_checked_out)
 
+#-----------------------------------------------------------------#
+
 # 3: Declare book missing
 
 def missing(days_over = int, missing = 31):
