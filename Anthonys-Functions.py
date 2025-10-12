@@ -39,13 +39,19 @@ def overdue_fine(days_over: int, fine = 0.25, max_days = 14):
     else:
         return f"This user has hit the maximum fine of {max_days * fine}"
     
-    """Test case"""
+""" Test case """
 overdue_fine(days_over)
 
 #-----------------------------------------------------------------#
 
 # 2: Add book to library
-def add_book(titles, authors, isbn, is_checked_out, new_title, new_author, new_isbn):
+
+new_title = input("Enter the new book title: ")
+new_author = input("Enter the new books author: ")
+new_isbn = input("Enter the new books isbn: ")
+
+
+def add_book(new_title, new_author, new_isbn, titles, authors, isbn, is_checked_out):
     """
     Adds a new book to the library list of books.
 
@@ -53,10 +59,33 @@ def add_book(titles, authors, isbn, is_checked_out, new_title, new_author, new_i
     new_title, new_author, new_isbn = the attributes of the new book being added
 
     """
+    check1 = len(titles)
+    check2 = len(authors)
+    check3 = len(isbn)
+
+    if not isinstance(new_title, str):
+        raise ValueError("Please re-run the script and enter a string.")
+    
+    if not isinstance(new_author, str):
+        raise ValueError("Please re-run the script and enter a string.")
+    
+    if not isinstance(new_isbn, str):
+        raise ValueError("Please re-run the script and enter a string.")
+    
+    if len(new_isbn) != 13:
+        raise ValueError("ISBN must be 13 charcters.")
 
     titles.append(new_title)
     authors.append(new_author)
+    isbn.append(new_isbn)
     is_checked_out.append(False)
-    return len(titles)
+
+    if len(titles) > check1 and len(authors) > check2 and len(isbn) > check3:
+        return f"New book successfully added"
+    else:
+        return f"New book not added."
+
+""" Test case """
+add_book(new_title, new_author, new_isbn, titles, authors, isbn, is_checked_out)
 
 # 3: Declare book missing
