@@ -55,3 +55,32 @@ def get_patron_info(patron_id: int, name: str, age: int, gender: str) -> dict:
         "Gender": gender
     }
     return patron_info
+#CLASS FOR LIBRARY MANAGEMENT:
+#This class is related to the due date function (#1)
+class Reminder:
+    """Utility class to build polite reminder messages for overdue books."""
+
+    @staticmethod
+    def build(overdue_days, title, member_name):
+        """
+        Build a reminder message for a member about an overdue book.
+
+        Args:
+            overdue_days (int): How many days the book is overdue.
+            title (str): The book title.
+            member_name (str): The member’s name.
+
+        Returns:
+            str: A polite reminder message.
+        """
+        if overdue_days <= 0:
+            return f"Hello {member_name}, your book '{title}' is due today. Please return it on time. Thank you!"
+
+        elif overdue_days <= 7:
+            return f"Dear {member_name}, your book '{title}' is {overdue_days} day(s) overdue. Kindly return it soon."
+
+        elif overdue_days <= 30:
+            return f"Dear {member_name}, your book '{title}' is {overdue_days} days overdue. Please return it to avoid late fees."
+
+        else:
+            return f"Dear {member_name}, your book '{title}' is {overdue_days} days overdue. Immediate return is required. Please contact the library if you need assistance."
