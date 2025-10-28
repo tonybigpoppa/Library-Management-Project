@@ -56,31 +56,118 @@ def get_patron_info(patron_id: int, name: str, age: int, gender: str) -> dict:
     }
     return patron_info
 #CLASS FOR LIBRARY MANAGEMENT:
-#This class is related to the due date function (#1)
+#This class is related to the due date function (#1) and get patron info function (#3)
 class Reminder:
-    """Utility class to build polite reminder messages for overdue books."""
+    """
+    A class to manage and generate polite reminder messages for overdue library books.
 
-    @staticmethod
-    def build(overdue_days, title, member_name):
+    Attributes:
+        _member_name (str): The member’s name.
+        _title (str): The book title.
+        _overdue_days (int): Number of days the book is overdue.
+
+    Example:
+        >>> reminder = Reminder("Alice", "1984", 5)
+        >>> print(reminder.generate_message())
+        Dear Alice, your book '1984' is 5 days overdue. Kindly return it soon.
+    """
+
+    def __init__(self, member_name, title, overdue_days):
         """
-        Build a reminder message for a member about an overdue book.
+        Initialize a Reminder instance with validation.
 
         Args:
-            overdue_days (int): How many days the book is overdue.
-            title (str): The book title.
-            member_name (str): The member’s name.
+            member_name (str): Name of the library member.
+            title (str): Title of the overdue book.
+            overdue_days (int): Number of overdue days (0 if due today).
 
-        Returns:
-            str: A polite reminder message.
+        Raises:
+            ValueError: If any argument is invalid.
         """
-        if overdue_days <= 0:
-            return f"Hello {member_name}, your book '{title}' is due today. Please return it on time. Thank you!"
+        if not isinstance(member_name, str) or not member_name.strip():
+            raise ValueError("member_name must be a non-empty string.")
+        if not isinstance(title, str) or not title.strip():
+            raise ValueError("title must be a non-empty string.")
+        if not isinstance(overdue_days, int) or overdue_days < 0:
+            raise ValueError("overdue_days must be a non-negative integer.")
 
-        elif overdue_days <= 7:
-            return f"Dear {member_name}, your book '{title}' is {overdue_days} day(s) overdue. Kindly return it soon."
+        self._member_name = member_name.strip()
+        self._title = title.strip()
+        self._overdue_days = overdue_days
 
-        elif overdue_days <= 30:
-            return f"Dear {member_name}, your book '{title}' is {overdue_days} days overdue. Please return it to avoid late fees."
+    # --- Properties with encapsulation ---
+    @property
+    def member_name(self):
+        """Get or set the member's name."""
+        return self._member_name
 
+    @member_name.setter
+    def member_name(self, value):
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("member_name must be a non-empty string.")
+        self._member_name = value.strip()
+
+    @property
+    def title(self):
+        """Get or set the book title."""
+        return self._title
+
+    @title.setter
+    def title(self, value):
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("title must be a non-empty string.")
+        self._title = value.strip()
+
+    @property
+    def overdue_days(self):
+        """Get or set the number of overdue days."""
+        return self._overdue_days
+
+    @overdue_days.setter
+    def overdue_days(self, value):
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("overdue_days must be a non-negative integer.")
+        self._overdue_days = value
+
+    # --- Instance methods ---
+    def generate_message(self):
+        """Return a polite reminder message based on how overdue the book is."""
+        days = self._overdue_days
+        day_word = "day" if days == 1 else "days"
+
+        if days == 0:
+            return (f"Hello {self._member_name}, your book '{self._title}' is due today. "
+                    f"Please return it on time. Thank you!")
+        elif days <= 7:
+            return (f"Dear {self._member_name}, your book '{self._title}' is {days} {day_word} overdue. "
+                    "Kindly return it soon.")
+        elif days <= 30:
+            return (f"Dear {self._member_name}, your book '{self._title}' is {days} {day_word} overdue. "
+                    "Please return it to avoid late fees.")
         else:
-            return f"Dear {member_name}, your book '{title}' is {overdue_days} days overdue. Immediate return is required. Please contact the library if you need assistance."
+            return (f"Dear {self._member_name}, your book '{self._title}' is {days} {day_word} overdue. "
+                    "Immediate return is required. Please contact the library if you need assistance.")
+
+    def is_urgent(self):
+        """Return True if the book is over 30 days overdue."""
+        return self._overdue_days > 30
+
+    def extend_due_date(self, extra_days):
+        """
+        Reduce overdue days to simulate granting an extension.
+
+        Args:
+            extra_days (int): Number of days to extend the due date.
+        """
+        if not isinstance(extra_days, int) or extra_days <= 0:
+            raise ValueError("extra_days must be a positive integer.")
+        self._overdue_days = max(0, self._overdue_days - extra_days)
+
+    # --- String representations ---
+    def __str__(self):
+        """Return a user-friendly string representation."""
+        return f"Reminder for {self._member_name}: '{self._title}' ({self._overdue_days} day(s) overdue)"
+
+    def __repr__(self):
+        """Return a detailed string representation for debugging."""
+        return f"Reminder(member_name='{self._member_name}', title='{self._title}', overdue_days={self._overdue_days})"
