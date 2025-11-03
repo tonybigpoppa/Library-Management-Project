@@ -125,17 +125,15 @@ missing(days_over)
 
 class LibraryPatron:
     """
-    A class representing a library patron with borrwing privileges amd fine tracking.
-    Atrributes:
-
-    _name (str): the patron's name   
-    _patron_id (str): unique identifier for the patron
-    _books_checked_out (list): list of ISBNs currently checked out
-    _total_fines (float): total fines owed by the patron
-
-
-    """ 
-   
+    A class representing a library patron with borrowing privileges and fine tracking.
+    
+    Attributes:
+        _name (str): The patron's name
+        _patron_id (str): Unique identifier for the patron
+        _books_checked_out (list): List of ISBNs currently checked out
+        _total_fines (float): Total fines owed by the patron
+    """
+    
     def __init__(self, name: str, patron_id: str):
         """
         Initialize a LibraryPatron instance.
@@ -162,16 +160,35 @@ class LibraryPatron:
         self._books_checked_out = []
         self._total_fines = 0.0
 
+    def _overdue_fine(self, days_over: int, fine: float = 0.25, max_days: int = 14) -> str:
+        """
+        Calculates the fine for having a book overdue.
+        """
+        try:
+            days_over = int(days_over)
+        except:
+            raise TypeError("Incorrect input.")
+
+        if not isinstance(days_over, int):
+            raise ValueError("Please re-run the script and enter a number.")
+        
+        if days_over < max_days:
+            return f"This users fine is: ${days_over * fine:.2f}", days_over * fine
+        elif days_over > 31:
+            return f"This book is missing.", 0.0
+        else:
+            return f"This user has hit the maximum fine of ${max_days * fine:.2f}", max_days * fine
+    
     @property
     def name(self) -> str:
         """Get the patron's name."""
         return self._name
-
+    
     @property
     def patron_id(self) -> str:
         """Get the patron's ID."""
         return self._patron_id
-
+    
     @property
     def books_checked_out(self) -> list:
         """Get list of books currently checked out (read-only)."""
@@ -181,14 +198,13 @@ class LibraryPatron:
     def total_fines(self) -> float:
         """Get the total fines owed by the patron."""
         return self._total_fines
-        
+    
     def check_out_book(self, isbn: str) -> str:
         """
         Check out a book for the patron.
         """
         if not isinstance(isbn, str):
             raise TypeError("ISBN must be a string.")
-        
         if len(isbn) != 13:
             raise ValueError("ISBN must be 13 characters.")
         
@@ -202,80 +218,70 @@ class LibraryPatron:
         if isbn in self._books_checked_out:
             self._books_checked_out.remove(isbn)
             return f"Book returned successfully. Total books: {len(self._books_checked_out)}"
-        
         else:
             return f"Book with ISBN {isbn} not found in checked out books."
-
+    
     def add_fine(self, amount: float) -> None:
         """
         Add a fine to the patron's account.
         """
         if not isinstance(amount, (int, float)):
             raise TypeError("Fine amount must be a number.")
-        
         if amount <= 0:
             raise ValueError("Fine amount must be positive.")
         
         self._total_fines += amount
-
+    
     def pay_fine(self, amount: float) -> str:
         """
         Pay towards the patron's fines.
         """
         if not isinstance(amount, (int, float)):
             raise TypeError("Payment amount must be a number.")
-
         if amount <= 0:
             raise ValueError("Payment amount must be positive.")
-        
         if amount > self._total_fines:
             raise ValueError("Payment cannot exceed total fines.")
         
         self._total_fines -= amount
         return f"Payment of ${amount:.2f} accepted. Remaining balance: ${self._total_fines:.2f}"
-
+    
     def calculate_overdue_fine(self, days_over: int) -> str:
         """
-        Calculate overdue fine using your existing function and add it to total fines.
+        Calculate overdue fine using the internal overdue_fine method and add it to total fines.
         """
-        result = overdue_fine(days_over)
-
-        if "fine is: $" in result:
-            # Extract the fine amount from the string
-            fine_amount = float(result.split("$")[1])
+        result, fine_amount = self._overdue_fine(days_over)
+        
+        if "fine" in result.lower():
             self.add_fine(fine_amount)
-
-        elif "maximum fine of $" in result:
-            # Extract the maximum fine amount
-            fine_amount = float(result.split("$")[1])
-            self.add_fine(fine_amount)
-
+        
         return result
-
+    
     def __str__(self) -> str:
         """
         Return informal string representation of the patron.
         """
         book_count = len(self._books_checked_out)
-
         return f"Patron: {self._name} (ID: {self._patron_id}) - Books: {book_count} - Fines: ${self._total_fines:.2f}"
     
     def __repr__(self) -> str:
         """
         Return formal string representation of the patron.
+        
+        Returns:
+            String that could be used to recreate the instance
         """
         return f"LibraryPatron(name='{self._name}', patron_id='{self._patron_id}')"
+
+
+# Test case demonstration
+if __name__ == "__main__":
+    patron = LibraryPatron("Anthony", "P001")
     
-    if __name__ == "__main__":
-        patron = LibraryPatron("Anthony", "P001")
-        print(patron.check_out_book("1234567891234"))
-
-        days_over = input("How many days overdue is the users book?: ")
-        print(patron.calculate_overdue_fine(int(days_over)))
-
-        print(patron)
-        print(repr(patron))
-
-
+    print(patron.check_out_book("1234567891234"))
     
-
+    days_over = input("How many days overdue is the users book?: ")
+    print(patron.calculate_overdue_fine(int(days_over)))
+    
+    print(patron)
+    print(repr(patron))
