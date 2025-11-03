@@ -124,4 +124,14 @@ def missing(days_over = int, missing = 31):
 missing(days_over)
 
 class LibraryPatron:
-    
+   """
+    A class representing a library patron with borrwing privileges amd fine tracking.
+    Atrributes:
+
+    _name (str): the patron's name   
+    _patron_id (str): unique identifier for the patron
+    _books_checked_out (list): list of ISBNs currently checked out
+    _total_fines (float): total fines owed by the patron
+
+
+    """ 
