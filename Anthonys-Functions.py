@@ -183,10 +183,72 @@ class LibraryPatron:
         return self._total_fines
         
     def check_out_book(self, isbn: str) -> str:
+        """
+        Check out a book for the patron.
+        """
         if not isinstance(isbn, str):
             raise TypeError("ISBN must be a string.")
+        
         if len(isbn) != 13:
             raise ValueError("ISBN must be 13 characters.")
         
         self._books_checked_out.append(isbn)
         return f"Book checked out successfully. Total books: {len(self._books_checked_out)}"
+    
+    def return_book(self, isbn: str) -> str:
+        """
+        Return a book that was checked out.
+        """
+        if isbn in self._books_checked_out:
+            self._books_checked_out.remove(isbn)
+            return f"Book returned successfully. Total books: {len(self._books_checked_out)}"
+        
+        else:
+            return f"Book with ISBN {isbn} not found in checked out books."
+
+    def add_fine(self, amount: float) -> None:
+        """
+        Add a fine to the patron's account.
+        """
+        if not isinstance(amount, (int, float)):
+            raise TypeError("Fine amount must be a number.")
+        
+        if amount <= 0:
+            raise ValueError("Fine amount must be positive.")
+        
+        self._total_fines += amount
+
+    def pay_fine(self, amount: float) -> str:
+        """
+        Pay towards the patron's fines.
+        """
+        if not isinstance(amount, (int, float)):
+            raise TypeError("Payment amount must be a number.")
+
+        if amount <= 0:
+            raise ValueError("Payment amount must be positive.")
+        
+        if amount > self._total_fines:
+            raise ValueError("Payment cannot exceed total fines.")
+        
+        self._total_fines -= amount
+        return f"Payment of ${amount:.2f} accepted. Remaining balance: ${self._total_fines:.2f}"
+
+    def calculate_overdue_fine(self, days_over: int) -> str:
+        """
+        Calculate overdue fine using your existing function and add it to total fines.
+        """
+        result = overdue_fine(days_over)
+
+        if "fine is: $" in result:
+            # Extract the fine amount from the string
+            fine_amount = float(result.split("$")[1])
+            self.add_fine(fine_amount)
+
+        elif "maximum fine of $" in result:
+            # Extract the maximum fine amount
+            fine_amount = float(result.split("$")[1])
+            self.add_fine(fine_amount)
+
+        return result
+
