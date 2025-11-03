@@ -176,3 +176,17 @@ class LibraryPatron:
     def books_checked_out(self) -> list:
         """Get list of books currently checked out (read-only)."""
         return self._books_checked_out.copy()
+    
+    @property
+    def total_fines(self) -> float:
+        """Get the total fines owed by the patron."""
+        return self._total_fines
+        
+    def check_out_book(self, isbn: str) -> str:
+        if not isinstance(isbn, str):
+            raise TypeError("ISBN must be a string.")
+        if len(isbn) != 13:
+            raise ValueError("ISBN must be 13 characters.")
+        
+        self._books_checked_out.append(isbn)
+        return f"Book checked out successfully. Total books: {len(self._books_checked_out)}"
