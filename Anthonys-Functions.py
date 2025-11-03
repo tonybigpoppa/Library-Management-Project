@@ -132,15 +132,17 @@ class LibraryPatron:
         _patron_id (str): Unique identifier for the patron
         _books_checked_out (list): List of ISBNs currently checked out
         _total_fines (float): Total fines owed by the patron
+        _overdue_function (callable): External function to calculate overdue fines
     """
     
-    def __init__(self, name: str, patron_id: str):
+    def __init__(self, name: str, patron_id: str, overdue_function):
         """
         Initialize a LibraryPatron instance.
         
         Args:
             name: The full name of the patron (must be non-empty string)
             patron_id: Unique identifier for the patron (must be non-empty string)
+            overdue_function: External function to calculate overdue fines
             
         Raises:
             ValueError: If name or patron_id are empty strings
@@ -159,25 +161,7 @@ class LibraryPatron:
         self._patron_id = patron_id.strip()
         self._books_checked_out = []
         self._total_fines = 0.0
-
-    def _overdue_fine(self, days_over: int, fine: float = 0.25, max_days: int = 14) -> str:
-        """
-        Calculates the fine for having a book overdue.
-        """
-        try:
-            days_over = int(days_over)
-        except:
-            raise TypeError("Incorrect input.")
-
-        if not isinstance(days_over, int):
-            raise ValueError("Please re-run the script and enter a number.")
-        
-        if days_over < max_days:
-            return f"This users fine is: ${days_over * fine:.2f}", days_over * fine
-        elif days_over > 31:
-            return f"This book is missing.", 0.0
-        else:
-            return f"This user has hit the maximum fine of ${max_days * fine:.2f}", max_days * fine
+        self._overdue_function = overdue_function  # Store the external function
     
     @property
     def name(self) -> str:
@@ -248,11 +232,15 @@ class LibraryPatron:
     
     def calculate_overdue_fine(self, days_over: int) -> str:
         """
-        Calculate overdue fine using the internal overdue_fine method and add it to total fines.
+        Calculate overdue fine using the external overdue_fine function.
         """
-        result, fine_amount = self._overdue_fine(days_over)
+        result = self._overdue_function(days_over)
         
-        if "fine" in result.lower():
+        if "fine is: $" in result:
+            fine_amount = float(result.split("$")[1])
+            self.add_fine(fine_amount)
+        elif "maximum fine of $" in result:
+            fine_amount = float(result.split("$")[1])
             self.add_fine(fine_amount)
         
         return result
@@ -267,21 +255,36 @@ class LibraryPatron:
     def __repr__(self) -> str:
         """
         Return formal string representation of the patron.
-        
-        Returns:
-            String that could be used to recreate the instance
         """
         return f"LibraryPatron(name='{self._name}', patron_id='{self._patron_id}')"
 
 
-# Test case demonstration
-if __name__ == "__main__":
-    patron = LibraryPatron("Anthony", "P001")
+# Your original function (unchanged)
+def overdue_fine(days_over: int, fine=0.25, max_days=14):
+    try:
+        days_over = int(days_over)
+    except:
+        raise TypeError("Incorrect input.")
+
+    if not isinstance(days_over, int):
+        raise ValueError("Please re-run the script and enter a number.")
     
-    print(patron.check_out_book("1234567891234"))
-    
-    days_over = input("How many days overdue is the users book?: ")
-    print(patron.calculate_overdue_fine(int(days_over)))
-    
-    print(patron)
-    print(repr(patron))
+    if days_over < max_days:
+        return f"This users fine is: ${days_over * fine}"
+    elif days_over > 31:
+        return f"This book is missing."
+    else:
+        return f"This user has hit the maximum fine of ${max_days * fine}"
+
+# Test Case
+patron = LibraryPatron("John Doe", "P123", overdue_fine)
+
+""" Test checkout """
+print(patron.check_out_book("1234567891234"))
+
+""" Test overdue fine """
+days_over = input("How many days overdue is the users book?: ")
+print(patron.calculate_overdue_fine(int(days_over)))
+
+""" Show final status """
+print(patron)
