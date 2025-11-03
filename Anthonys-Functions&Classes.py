@@ -1,3 +1,16 @@
+
+
+#-----------------------------------------------------------------#
+
+
+# IMPORTANT MESSAGE: Going forward this is going to be the file where all my programming is done. I changed the name later to reflect that.
+# HOWEVER!! Because this version does not contain the full edit history of the original (Anthonys-Functions.py), I will turn in this version alongside the original.
+# Please only consider this version when grading. If there is any confusion please reach out to me.
+
+
+#-----------------------------------------------------------------#
+
+
 # Anthonys Functions
 titles = [
     "The Pragmatic Programmer", "Clean Code", "Python Crash Course",
