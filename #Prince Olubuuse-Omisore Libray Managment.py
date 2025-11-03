@@ -133,3 +133,36 @@ def format_book_name(title):
 title_to_format = input("Enter a book title to format: ")
 format_book_name(title_to_format)
 
+# add members
+for u in users_data:
+    catalog.register_member(Member(u["name"]))
+
+# add books (preserve available and user fields)
+for i, b in enumerate(books_data):
+    bk = Book(item_id=str(i+1), title=b["title"], author="", isbn="")
+    if not b["available"] and b["user"]:
+        # mark as checked out to that user
+        bk._available = False  # keep internal state consistent with original data
+        bk._user = b["user"]
+    catalog.add_book(bk)
+
+print("Available books:", catalog.list_available_books())
+print("Anthony borrowed:", catalog.list_member_books("Anthony"))
+
+# Try checkout (should raise if unavailable)
+try:
+    loan = catalog.checkout("Clean Code", "Prince")
+    print("Loan created:", loan)
+except Exception as e:
+    print("Checkout error:", e)
+
+# Return a book
+catalog.return_book("Python Crash Course", "Anthony")
+print("After return, Anthony borrowed:", catalog.list_member_books("Anthony"))
+print("Available books now:", catalog.list_available_books())
+
+# Save state to a JSON file
+catalog.save_to_file("/mnt/data/INST326_Project2_Catalog.json")
+print("Saved catalog to /mnt/data/INST326_Project2_Catalog.json")
+
+
