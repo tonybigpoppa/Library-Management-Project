@@ -252,3 +252,30 @@ class LibraryPatron:
 
         return result
 
+    def __str__(self) -> str:
+        """
+        Return informal string representation of the patron.
+        """
+        book_count = len(self._books_checked_out)
+
+        return f"Patron: {self._name} (ID: {self._patron_id}) - Books: {book_count} - Fines: ${self._total_fines:.2f}"
+    
+    def __repr__(self) -> str:
+        """
+        Return formal string representation of the patron.
+        """
+        return f"LibraryPatron(name='{self._name}', patron_id='{self._patron_id}')"
+    
+    if __name__ == "__main__":
+        patron = LibraryPatron("Anthony", "P001")
+        print(patron.check_out_book("1234567891234"))
+
+        days_over = input("How many days overdue is the users book?: ")
+        print(patron.calculate_overdue_fine(int(days_over)))
+
+        print(patron)
+        print(repr(patron))
+
+
+    
+
