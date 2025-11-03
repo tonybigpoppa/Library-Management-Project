@@ -122,3 +122,6 @@ def missing(days_over = int, missing = 31):
     
 """ Test Case """
 missing(days_over)
+
+class LibraryPatron:
+    
