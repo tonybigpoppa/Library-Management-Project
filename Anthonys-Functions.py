@@ -124,7 +124,7 @@ def missing(days_over = int, missing = 31):
 missing(days_over)
 
 class LibraryPatron:
-   """
+    """
     A class representing a library patron with borrwing privileges amd fine tracking.
     Atrributes:
 
@@ -135,3 +135,44 @@ class LibraryPatron:
 
 
     """ 
+   
+    def __init__(self, name: str, patron_id: str):
+        """
+        Initialize a LibraryPatron instance.
+        
+        Args:
+            name: The full name of the patron (must be non-empty string)
+            patron_id: Unique identifier for the patron (must be non-empty string)
+            
+        Raises:
+            ValueError: If name or patron_id are empty strings
+            TypeError: If name or patron_id are not strings
+        """
+        if not isinstance(name, str):
+            raise TypeError("Name must be a string.")
+        if not isinstance(patron_id, str):
+            raise TypeError("Patron ID must be a string.")
+        if not name.strip():
+            raise ValueError("Name cannot be empty.")
+        if not patron_id.strip():
+            raise ValueError("Patron ID cannot be empty.")
+        
+        self._name = name.strip()
+        self._patron_id = patron_id.strip()
+        self._books_checked_out = []
+        self._total_fines = 0.0
+
+    @property
+    def name(self) -> str:
+        """Get the patron's name."""
+        return self._name
+
+    @property
+    def patron_id(self) -> str:
+        """Get the patron's ID."""
+        return self._patron_id
+
+    @property
+    def books_checked_out(self) -> list:
+        """Get list of books currently checked out (read-only)."""
+        return self._books_checked_out.copy()
