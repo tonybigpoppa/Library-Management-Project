@@ -54,3 +54,47 @@ Contribution Guidelines for all Team Members:
 3. Write clear, informative commit messages.
 4. Add inline comments to clarify logic, especially for loops or conditionals.
 5. Keep your code neat and consistent — use standard indentation (4 spaces) and follow Python best practices (PEP 8)
+
+
+Class Heirarchy Diagram :
+          +------------------------+
+          |      LibraryItem       |  (Abstract)
+          +------------------------+
+          | + title                |
+          | + author               |
+          | + description()        |
+          | + calculate_loan_period() (abstract)
+          +------------+-----------+
+                       |
+     -----------------------------------------
+     |                  |                     |
++-----------+     +-----------+       +-----------+
+|   Book    |     | Magazine  |       |    DVD    |
++-----------+     +-----------+       +-----------+
+| + pages   |     | + issue#  |       | + runtime |
++-----------+     +-----------+       +-----------+
+
+Polyphormism Examples:
+items = [
+    Book("Dune", "Frank Herbert", 412),
+    Magazine("Science Weekly", "Various", 105),
+    DVD("Inception", "Christopher Nolan", 148)
+]
+
+for item in items:
+    print(item.calculate_loan_period())
+
+Composition Example: 
+library = Library()
+library.add_item(Book("1984", "George Orwell", 328))
+library.add_item(Magazine("TIME", "Various", 209))
+
+Usage Example:
+book = Book("The Hobbit", "J.R.R. Tolkien", 310)
+dvd = DVD("Interstellar", "Christopher Nolan", 169)
+
+library = Library()
+library.add_item(book)
+library.add_item(dvd)
+
+library.list_items()
