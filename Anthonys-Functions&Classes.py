@@ -439,7 +439,30 @@ class EnhancedLibraryPatron(LibraryPatron):
         return f"Item {item_id} not found in borrowed items"
 
 # Test Case
+
 patron = LibraryPatron("John Doe", "P123", overdue_fine)
+if __name__ == "__main__":
+    # Create library and add items
+    library = Library()
+    library.add_item(Book("Clean Code", "B002", "Robert C. Martin", 464))
+    library.add_item(DVD("The Matrix", "D002", "Lana Wachowski", 136))
+    library.add_item(Magazine("National Geographic", "M002", "March 2024", "National Geographic Society"))
+    
+    # Demonstrate polymorphism
+    demonstrate_polymorphism()
+    
+    # Test with your existing patron system
+    patron = EnhancedLibraryPatron("John Doe", "P123", overdue_fine)
+    
+    print("\n=== TESTING INTEGRATED SYSTEM ===")
+    # Borrow an item
+    clean_code = library.find_item("B002")
+    print(patron.borrow_item(clean_code))
+    
+    # Show polymorphic behavior with library items
+    print("\nAll library items with their loan periods:")
+    for item in library.get_all_items():
+        print(f"  - {item.title}: {item.calculate_loan_period()} days")
 
 """ Test checkout """
 print(patron.check_out_book("1234567891234"))
