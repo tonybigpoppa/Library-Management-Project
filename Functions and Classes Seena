@@ -251,3 +251,159 @@ class LibraryItem:
                 f"item_type={self._item_type!r}, loan_period={self._loan_period!r}, "
                 f"is_available={self._is_available!r})")
 
+
+
+
+
+
+from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
+
+# ----------------------
+# Abstract Base Class
+# ----------------------
+class LibraryItem(ABC):
+    """
+    Abstract base class for all library items.
+    Enforces that every item implements calculate_loan_period().
+    """
+
+    def __init__(self, title: str, copies: int):
+        self.title = title.strip()
+        if not self.title:
+            raise ValueError("Title cannot be empty")
+        if copies < 0:
+            raise ValueError("Copies cannot be negative")
+        self.copies = copies
+
+    @abstractmethod
+    def calculate_loan_period(self) -> int:
+        """Return loan period in days. Must be implemented by subclasses."""
+        pass
+
+    def checkout(self) -> str:
+        """Decrement copies and return checkout message."""
+        if self.copies <= 0:
+            raise ValueError(f"No copies of '{self.title}' available")
+        self.copies -= 1
+        return f"Checked out '{self.title}' for {self.calculate_loan_period()} days"
+
+    def return_item(self) -> str:
+        """Increment copies and return return message."""
+        self.copies += 1
+        return f"Returned '{self.title}'"
+
+    def __str__(self):
+        return f"{self.title} ({self.copies} copies)"
+
+
+# ----------------------
+# Derived Classes
+# ----------------------
+class Book(LibraryItem):
+    """Represents a printed book."""
+    def calculate_loan_period(self) -> int:
+        return 14  # 2 weeks
+
+class EBook(LibraryItem):
+    """Represents an electronic book."""
+    def calculate_loan_period(self) -> int:
+        return 21  # 3 weeks
+
+class AudioBook(LibraryItem):
+    """Represents an audiobook."""
+    def calculate_loan_period(self) -> int:
+        return 7  # 1 week
+
+
+# ----------------------
+# Composition Classes
+# ----------------------
+class Catalog:
+    """
+    Catalog contains multiple LibraryItem objects (composition).
+    Demonstrates "has-a" relationship.
+    """
+
+    def __init__(self):
+        self.items = []
+
+    def add_item(self, item: LibraryItem):
+        self.items.append(item)
+
+    def list_items(self):
+        print("Catalog Listing:")
+        for item in self.items:
+            print(f" - {item} | Loan period: {item.calculate_loan_period()} days")
+
+    def __contains__(self, query):
+        return any(item.title == query or item == query for item in self.items)
+
+
+class Member:
+    """
+    Represents a library member.
+    Composition: Member has loans which contain LibraryItems.
+    """
+
+    def __init__(self, name: str):
+        self.name = name.strip()
+        if not self.name:
+            raise ValueError("Member name cannot be empty")
+        self.loans = []
+
+    def borrow_item(self, item: LibraryItem) -> str:
+        """Borrow an item and record due date."""
+        message = item.checkout()
+        due_date = datetime.now() + timedelta(days=item.calculate_loan_period())
+        self.loans.append({'item': item, 'due_date': due_date})
+        return message
+
+    def return_item(self, item: LibraryItem) -> str:
+        """Return an item and remove from loans."""
+        item.return_item()
+        self.loans = [loan for loan in self.loans if loan['item'] != item]
+        return f"{self.name} returned '{item.title}'"
+
+    def list_loans(self):
+        print(f"{self.name}'s Current Loans:")
+        for loan in self.loans:
+            due = loan['due_date'].strftime("%Y-%m-%d")
+            print(f" - {loan['item'].title}, Due: {due}")
+
+
+# ----------------------
+# Demo / Usage
+# ----------------------
+if __name__ == "__main__":
+    # Create library items
+    book1 = Book("1984", 3)
+    ebook1 = EBook("Python 101", 5)
+    audio1 = AudioBook("Learn Spanish", 2)
+
+    # Create catalog and add items
+    catalog = Catalog()
+    catalog.add_item(book1)
+    catalog.add_item(ebook1)
+    catalog.add_item(audio1)
+    catalog.list_items()
+
+    # Check polymorphism
+    for item in [book1, ebook1, audio1]:
+        print(f"{item.title} loan period: {item.calculate_loan_period()} days")
+
+    # Create member and borrow items
+    member = Member("Seena")
+    print(member.borrow_item(book1))
+    print(member.borrow_item(audio1))
+    member.list_loans()
+
+    # Return an item
+    print(member.return_item(book1))
+    member.list_loans()
+
+    # Check catalog containment
+    print("1984" in catalog)  # True
+    print("Nonexistent Book" in catalog)  # False
+
+
