@@ -322,6 +322,22 @@ class AbstractItem(ABC):
     
     def __str__(self):
         return f"{self.get_description()} - Loan: {self.calculate_loan_period()} days"
+    
+class Book(AbstractItem):
+    """Book class with longest loan period"""
+
+    def __init__(self, title: str, item_id: str, author: str, pages: int):
+        super().__init__(title, item_id)  # Using super() appropriately
+        self.author = author
+        self.pages = pages
+
+    def calculate_loan_period(self) -> int:
+        """Books have the longest loan period"""
+        return 21 
+    
+    def get_description(self) -> str:
+        return f"Book: {self.title} by {self.author} ({self.pages} pages)"    
+
 # Test Case
 patron = LibraryPatron("John Doe", "P123", overdue_fine)
 
