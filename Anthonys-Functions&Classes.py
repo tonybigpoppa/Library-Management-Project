@@ -1,15 +1,11 @@
 
-
 #-----------------------------------------------------------------#
-
 
 # IMPORTANT MESSAGE: Going forward this is going to be the file where all my programming is done. I changed the name later to reflect that.
 # HOWEVER!! Because this version does not contain the full edit history of the original (Anthonys-Functions.py), I will turn in this version alongside the original.
 # Please only consider this version when grading. If there is any confusion please reach out to me.
 
-
 #-----------------------------------------------------------------#
-
 
 # Anthonys Functions
 titles = [
@@ -24,11 +20,10 @@ isbn = [
     "1234567891234", "1234567891235", "1234567891236",
     "1234567891237", "1234567891238"
 ]
-is_checked_out = [False, False, True, False, True]  # True = checked out
+is_checked_out = [False, False, True, False, True]
 
 days_over = input("How many days overdue is the users book?: ")
 
-# 1: Compute overdue fine
 def overdue_fine(days_over: int, fine = 0.25, max_days = 14):
     """ 
     Calculates the fine for having a book overdue.
@@ -174,7 +169,7 @@ class LibraryPatron:
         self._patron_id = patron_id.strip()
         self._books_checked_out = []
         self._total_fines = 0.0
-        self._overdue_function = overdue_function  # Store the external function
+        self._overdue_function = overdue_function
     
     @property
     def name(self) -> str:
@@ -272,7 +267,6 @@ class LibraryPatron:
         return f"LibraryPatron(name='{self._name}', patron_id='{self._patron_id}')"
 
 
-# Your original function
 def overdue_fine(days_over: int, fine=0.25, max_days=14):
     try:
         days_over = int(days_over)
