@@ -123,6 +123,8 @@ def missing(days_over = int, missing = 31):
 """ Test Case """
 missing(days_over)
 
+#-----------------------------------------------------------------#
+
 class LibraryPatron:
     """
     A class representing a library patron with borrowing privileges and fine tracking.
@@ -161,7 +163,7 @@ class LibraryPatron:
         self._patron_id = patron_id.strip()
         self._books_checked_out = []
         self._total_fines = 0.0
-        self._overdue_function = overdue_function  # Store the external function
+        self._overdue_function = overdue_function
     
     @property
     def name(self) -> str:
@@ -259,7 +261,7 @@ class LibraryPatron:
         return f"LibraryPatron(name='{self._name}', patron_id='{self._patron_id}')"
 
 
-# Your original function (unchanged)
+# Your original function
 def overdue_fine(days_over: int, fine=0.25, max_days=14):
     try:
         days_over = int(days_over)
