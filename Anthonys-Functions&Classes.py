@@ -338,6 +338,21 @@ class Book(AbstractItem):
     def get_description(self) -> str:
         return f"Book: {self.title} by {self.author} ({self.pages} pages)"    
 
+class DVD(AbstractItem):
+    """DVD class with shortest loan period"""
+    
+    def __init__(self, title: str, item_id: str, director: str, runtime: int):
+        super().__init__(title, item_id) 
+        self.director = director
+        self.runtime = runtime    
+
+    def calculate_loan_period(self) -> int:
+        """DVDs have the shortest loan period"""
+        return 7 
+
+    def get_description(self) -> str:
+        return f"DVD: {self.title} directed by {self.director} ({self.runtime} min)"
+
 # Test Case
 patron = LibraryPatron("John Doe", "P123", overdue_fine)
 
