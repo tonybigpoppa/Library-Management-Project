@@ -397,6 +397,46 @@ class Library:
         item = self.find_item(item_id)
         return item.check_out(patron_id)
 
+def demonstrate_polymorphism():
+    """Polymorphic behavior demonstration"""
+
+    items = [
+        Book("The Pragmatic Programmer", "B001", "Andrew Hunt & David Thomas", 352),
+        DVD("Inception", "D001", "Christopher Nolan", 148),
+        Magazine("Time", "M001", "January 2024", "Time USA")
+    ]
+
+    print("=== POLYMORPHISM DEMONSTRATION ===")
+    print("Same method call -> Different behaviors:\n")
+
+    for item in items:
+        print(f"{item.calculate_loan_period()} days - {item.get_description()}")
+    
+    print(f"\nTotal items processed uniformly: {len(items)}")
+
+class EnhancedLibraryPatron(LibraryPatron):
+    """Enhanced patron class that works with the new item system"""
+
+    def __init__(self, name: str, patron_id: str, overdue_function):
+        super().__init__(name, patron_id, overdue_function)
+        self._borrowed_items = []
+
+    def borrow_item(self, item: AbstractItem) -> str:
+        """Borrow an item using the new system"""
+        result = item.check_out(self.patron_id)
+        if "successfully" in result:
+            self._borrowed_items.append(item)
+        return result
+
+    def return_borrowed_item(self, item_id: str) -> str:
+        """Return a borrowed item"""
+        for item in self._borrowed_items:
+            if item.item_id == item_id:
+                result = item.return_item()
+                if "returned" in result:
+                    self._borrowed_items.remove(item)
+                return result
+        return f"Item {item_id} not found in borrowed items"
 
 # Test Case
 patron = LibraryPatron("John Doe", "P123", overdue_fine)
