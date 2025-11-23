@@ -327,7 +327,7 @@ class Book(AbstractItem):
     """Book class with longest loan period"""
 
     def __init__(self, title: str, item_id: str, author: str, pages: int):
-        super().__init__(title, item_id)  # Using super() appropriately
+        super().__init__(title, item_id) 
         self.author = author
         self.pages = pages
 
@@ -352,6 +352,22 @@ class DVD(AbstractItem):
 
     def get_description(self) -> str:
         return f"DVD: {self.title} directed by {self.director} ({self.runtime} min)"
+
+class Magazine(AbstractItem):
+    """Magazine class with medium loan period"""
+
+    def __init__(self, title: str, item_id: str, issue: str, publisher: str):
+        super().__init__(title, item_id) 
+        self.issue = issue
+        self.publisher = publisher
+
+    def calculate_loan_period(self) -> int:
+        """Magazines have medium loan period"""
+        return 14 
+
+    def get_description(self) -> str:
+        return f"Magazine: {self.title} - {self.issue} by {self.publisher}"
+
 
 # Test Case
 patron = LibraryPatron("John Doe", "P123", overdue_fine)
