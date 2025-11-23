@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+from typing import List
 
 #-----------------------------------------------------------------#
 
@@ -283,6 +285,43 @@ def overdue_fine(days_over: int, fine=0.25, max_days=14):
     else:
         return f"This user has hit the maximum fine of ${max_days * fine}"
 
+class AbstractItem(ABC):
+    """Abstract base class for all library items"""
+    
+    def __init__(self, title: str, item_id: str):
+        self.title = title
+        self.item_id = item_id
+        self.is_checked_out = False
+        self.checked_out_to = None
+
+    @abstractmethod
+    def calculate_loan_period(self) -> int:
+        """Calculate the loan period in days"""
+        pass
+
+    @abstractmethod
+    def get_description(self) -> str:
+        """Get detailed description of the item"""
+        pass
+
+    def check_out(self, patron_id: str) -> str:
+        """Check out this item to a patron"""
+        if self.is_checked_out:
+            return f"{self.title} is already checked out"
+        self.is_checked_out = True
+        self.checked_out_to = patron_id
+        return f"{self.title} checked out successfully"
+    
+    def return_item(self) -> str:
+        """Return this item"""
+        if not self.is_checked_out:
+            return f"{self.title} is not checked out"
+        self.is_checked_out = False
+        self.checked_out_to = None
+        return f"{self.title} returned successfully"
+    
+    def __str__(self):
+        return f"{self.get_description()} - Loan: {self.calculate_loan_period()} days"
 # Test Case
 patron = LibraryPatron("John Doe", "P123", overdue_fine)
 
