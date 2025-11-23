@@ -368,6 +368,35 @@ class Magazine(AbstractItem):
     def get_description(self) -> str:
         return f"Magazine: {self.title} - {self.issue} by {self.publisher}"
 
+class Library:
+    """
+    Library class that uses COMPOSITION to contain library items
+    Rationale: A Library has items, but isn't a type of item itself
+    """
+
+    def __init__(self):
+        self._items: List[AbstractItem] = []  
+
+    def add_item(self, item: AbstractItem) -> None:
+        """Add an item to the library"""
+        self._items.append(item)
+
+    def find_item(self, item_id: str) -> AbstractItem:
+        """Find an item by ID"""
+        for item in self._items:
+            if item.item_id == item_id:
+                return item
+        raise ValueError(f"Item with ID {item_id} not found")
+
+    def get_all_items(self) -> List[AbstractItem]:
+        """Get all items in the library"""
+        return self._items.copy()
+
+    def checkout_item(self, item_id: str, patron_id: str) -> str:
+        """Check out an item from the library"""
+        item = self.find_item(item_id)
+        return item.check_out(patron_id)
+
 
 # Test Case
 patron = LibraryPatron("John Doe", "P123", overdue_fine)
