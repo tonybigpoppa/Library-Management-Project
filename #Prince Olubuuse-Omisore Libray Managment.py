@@ -14,28 +14,45 @@ users = [
     {"name": "Jamal", "borrowed_books": []} 
 ]
 
-""" Testing """
-title_to_format = input("Enter a book title to format: ")
-format_book_name(title_to_format)
-
 from __future__ import annotations
+from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 import json
 from typing import List, Optional
 
-class LibraryItem:
-    """Represents a generic library item."""
-    def __init__(self, item_id: str, title: str, item_type: str = "book", loan_period: int = 14):
+
+# -----------------------------
+# ABSTRACT BASE CLASS (REQUIRED)
+# -----------------------------
+class AbstractLibraryItem(ABC):
+    """Abstract base class enforcing required interface for library items."""
+
+    @abstractmethod
+    def calculate_loan_period(self) -> int:
+        """Each subclass must implement its own loan period logic."""
+        pass
+
+    @abstractmethod
+    def checkout(self) -> datetime:
+        """Must be implemented by subclasses."""
+        pass
+
+
+# -----------------------------
+# BASE CLASS
+# -----------------------------
+class LibraryItem(AbstractLibraryItem):
+    """Base class for all library items."""
+
+    def __init__(self, item_id: str, title: str, item_type: str):
         if not isinstance(item_id, str) or not item_id.strip():
             raise ValueError("item_id must be a non-empty string")
         if not isinstance(title, str) or not title.strip():
             raise ValueError("title must be a non-empty string")
-        if loan_period < 0:
-            raise ValueError("loan_period must be non-negative")
+
         self._item_id = item_id
         self._title = title.strip()
         self._item_type = item_type
-        self._loan_period = int(loan_period)
         self._available = True
 
     @property
@@ -54,11 +71,16 @@ class LibraryItem:
     def available(self) -> bool:
         return self._available
 
+    # Default loan period — overridden in subclasses
+    def calculate_loan_period(self) -> int:
+        return 14  # default 2 weeks
+
     def checkout(self) -> datetime:
         if not self._available:
-            raise RuntimeError("Item not available for checkout")
+            raise RuntimeError("Item not available")
         self._available = False
-        return datetime.now() + timedelta(days=self._loan_period)
+        days = self.calculate_loan_period()
+        return datetime.now() + timedelta(days=days)
 
     def checkin(self) -> None:
         self._available = True
@@ -67,198 +89,154 @@ class LibraryItem:
         status = "Available" if self._available else "Checked out"
         return f"{self._title} ({self._item_type}) - {status}"
 
-    def __repr__(self):
-        return f"LibraryItem({self._item_id!r}, {self._title!r}, {self._item_type!r})"
 
+# -----------------------------
+# SUBCLASS #1 — BOOK (POLYMORPHIC)
+# -----------------------------
 class Book(LibraryItem):
-    """Concrete Book keeping the same 'available' and single 'user' semantics (Option A)."""
-    def __init__(self, item_id: str, title: str, author: str = "", isbn: str = "", loan_period: int = 14):
-        super().__init__(item_id=item_id, title=title, item_type="book", loan_period=loan_period)
+    """Book item: has author + ISBN. Loan period = 14 days."""
+
+    def __init__(self, item_id: str, title: str, author: str = "", isbn: str = ""):
+        super().__init__(item_id=item_id, title=title, item_type="book")
         self._author = author
         self._isbn = isbn
-        self._user: Optional[str] = None  # name of user who checked out (Option A)
+        self._user: Optional[str] = None
 
     @property
-    def author(self) -> str:
+    def author(self):
         return self._author
 
     @property
-    def isbn(self) -> str:
+    def isbn(self):
         return self._isbn
 
-    @property
-    def user(self) -> Optional[str]:
-        return self._user
+    def calculate_loan_period(self) -> int:
+        return 14  # Books get 2 weeks
 
     def assign_to_user(self, user_name: str) -> datetime:
-        if not self.available:
-            raise RuntimeError("Book not available")
-        if not isinstance(user_name, str) or not user_name.strip():
-            raise ValueError("user_name must be a non-empty string")
         due = self.checkout()
         self._user = user_name
         return due
 
-    def return_from_user(self) -> None:
+    def return_from_user(self):
         self.checkin()
         self._user = None
 
-    def __repr__(self):
-        return f"Book({self.item_id!r}, {self.title!r}, author={self._author!r})"
 
+# -----------------------------
+# SUBCLASS #2 — JOURNAL (POLYMORPHIC)
+# -----------------------------
+class Journal(LibraryItem):
+    """Journal item: shorter loan time."""
+
+    def __init__(self, item_id: str, title: str, volume: int):
+        super().__init__(item_id=item_id, title=title, item_type="journal")
+        self._volume = volume
+
+    def calculate_loan_period(self) -> int:
+        return 7  # Journals = 1 week
+
+
+# -----------------------------
+# SUBCLASS #3 — DVD (POLYMORPHIC)
+# -----------------------------
+class DVD(LibraryItem):
+    """DVD item: shortest loan time."""
+
+    def __init__(self, item_id: str, title: str, runtime_minutes: int):
+        super().__init__(item_id=item_id, title=title, item_type="dvd")
+        self._runtime_minutes = runtime_minutes
+
+    def calculate_loan_period(self) -> int:
+        return 3  # DVDs = 3 days
+
+
+# -----------------------------
+# MEMBER
+# -----------------------------
 class Member:
-    """Represents a library member."""
     def __init__(self, name: str):
-        if not isinstance(name, str) or not name.strip():
-            raise ValueError("name must be a non-empty string")
-        self._name = name.strip()
-        self._borrowed: List[str] = []  # list of book titles (Option A)
+        self._name = name
+        self._borrowed: List[str] = []
 
     @property
     def name(self) -> str:
         return self._name
 
-    @property
-    def borrowed_books(self) -> List[str]:
-        return list(self._borrowed)
-
-    def borrow(self, book: Book) -> datetime:
-        due = book.assign_to_user(self._name)
-        self._borrowed.append(book.title)
+    def borrow(self, item: LibraryItem) -> datetime:
+        due = item.checkout()
+        self._borrowed.append(item.title)
         return due
 
-    def return_book(self, book: Book) -> None:
-        if book.title in self._borrowed:
-            self._borrowed.remove(book.title)
-        book.return_from_user()
+    def return_item(self, item: LibraryItem):
+        if item.title in self._borrowed:
+            self._borrowed.remove(item.title)
+        item.checkin()
 
-    def __repr__(self):
-        return f"Member({self._name!r})"
 
+# -----------------------------
+# LOAN — Composition
+# -----------------------------
 class Loan:
-    """Represents a loan (ties a Book to a Member with a due date)."""
-    def __init__(self, book: Book, member: Member, due_date: datetime):
-        if not isinstance(book, Book):
-            raise ValueError("book must be a Book")
-        if not isinstance(member, Member):
-            raise ValueError("member must be a Member")
-        if not isinstance(due_date, datetime):
-            raise ValueError("due_date must be a datetime")
-        self._book = book
+    """A Loan object composes a Member + LibraryItem."""
+
+    def __init__(self, item: LibraryItem, member: Member, due_date: datetime):
+        self._item = item
         self._member = member
         self._due_date = due_date
 
     @property
-    def book(self) -> Book:
-        return self._book
+    def item(self):
+        return self._item
 
     @property
-    def member(self) -> Member:
+    def member(self):
         return self._member
 
     @property
-    def due_date(self) -> datetime:
+    def due_date(self):
         return self._due_date
 
-    def is_overdue(self) -> bool:
-        return datetime.now() > self._due_date
 
-    def days_overdue(self) -> int:
-        if not self.is_overdue():
-            return 0
-        return (datetime.now() - self._due_date).days
-
-    def __repr__(self):
-        return f"Loan(book={self._book.title!r}, member={self._member.name!r}, due={self._due_date.date()!r})"
-
+# -----------------------------
+# CATALOG — Composition of Items + Members + Loans
+# -----------------------------
 class Catalog:
-    """Manages a collection of Book objects and Member records."""
     def __init__(self):
-        self._books: List[Book] = []
+        self._items: List[LibraryItem] = []
         self._members: List[Member] = []
         self._loans: List[Loan] = []
 
-    @property
-    def books(self) -> List[Book]:
-        return list(self._books)
+    def add_item(self, item: LibraryItem):
+        self._items.append(item)
 
-    @property
-    def members(self) -> List[Member]:
-        return list(self._members)
-
-    def add_book(self, book: Book) -> None:
-        if not isinstance(book, Book):
-            raise ValueError("must add a Book instance")
-        # keep original semantics: do not allow duplicate titles
-        if any(b.title.lower() == book.title.lower() for b in self._books):
-            raise ValueError("Book already exists in catalog")
-        self._books.append(book)
-
-    def find_book_by_title(self, title: str) -> Optional[Book]:
-        for b in self._books:
-            if b.title.lower() == title.lower():
-                return b
-        return None
-
-    def remove_book(self, title: str) -> bool:
-        b = self.find_book_by_title(title)
-        if b:
-            if not b.available:
-                raise RuntimeError("Cannot remove a checked-out book")
-            self._books.remove(b)
-            return True
-        return False
-
-    def register_member(self, member: Member) -> None:
-        if not isinstance(member, Member):
-            raise ValueError("member must be Member")
-        if any(m.name.lower() == member.name.lower() for m in self._members):
-            raise ValueError("Member already registered")
+    def register_member(self, member: Member):
         self._members.append(member)
 
     def find_member(self, name: str) -> Optional[Member]:
-        for m in self._members:
-            if m.name.lower() == name.lower():
-                return m
-        return None
+        return next((m for m in self._members if m.name.lower() == name.lower()), None)
+
+    def find_item(self, title: str) -> Optional[LibraryItem]:
+        return next((i for i in self._items if i.title.lower() == title.lower()), None)
 
     def checkout(self, title: str, member_name: str) -> Loan:
-        book = self.find_book_by_title(title)
-        if not book:
-            raise ValueError("Book not found")
+        item = self.find_item(title)
         member = self.find_member(member_name)
+
+        if not item:
+            raise ValueError("Item not found.")
         if not member:
-            raise ValueError("Member not found")
-        due = member.borrow(book)
-        loan = Loan(book=book, member=member, due_date=due)
+            raise ValueError("Member not found.")
+
+        due = member.borrow(item)
+        loan = Loan(item, member, due)
         self._loans.append(loan)
         return loan
 
-    def return_book(self, title: str, member_name: str) -> bool:
-        book = self.find_book_by_title(title)
+    def return_item(self, title: str, member_name: str):
+        item = self.find_item(title)
         member = self.find_member(member_name)
-        if not book or not member:
-            raise ValueError("Book or member not found")
-        member.return_book(book)
-        
-        self._loans = [l for l in self._loans if not (l.book.title==title and l.member.name==member_name)]
-        return True
+        member.return_item(item)
 
-    def list_available_books(self) -> List[str]:
-        return [b.title for b in self._books if b.available]
+        self._loans = [l for l in self._loans if l.item.title != title or l.member.name != member_name]
 
-    def list_member_books(self, member_name: str) -> List[str]:
-        m = self.find_member(member_name)
-        if not m:
-            raise ValueError("Member not found")
-        return m.borrowed_books
-
-    def serialize(self) -> dict:
-        return {
-            "books": [{ "title": b.title, "author": b.author, "isbn": b.isbn, "available": b.available, "user": b.user } for b in self._books],
-            "members": [{ "name": m.name, "borrowed_books": m.borrowed_books } for m in self._members]
-        }
-
-    def save_to_file(self, path: str) -> None:
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(self.serialize(), f, indent=2)
