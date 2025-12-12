@@ -6,7 +6,7 @@ The Library Management System is a Python-based application designed to help lib
 
 Name	Role	Responsibilities:
 [Hanan Wolde]	Project Lead / Coordinator	Oversees the overall project, assigns tasks, manages timeline, and ensures all requirements are met.
-[Member 2]	Lead Developer	Designs and implements the main Python classes and core logic (book, member, and lending functions).
+[Prince]	Lead Developer	Designs and implements the main Python classes and core logic (book, member, and lending functions).
 [Seena Rad]	Data Manager	Manages datasets, validates input/output, and ensures data consistency across modules.
 [Anthony Palma]	Tester / Quality Assurance	Creates and executes test cases, ensures code reliability, and handles debugging.
 [Darian La]	Documentation & Git Manager	Maintains README, docstrings, and handles Git commits, version control, and pull requests.
