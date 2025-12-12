@@ -1,0 +1,22 @@
+{
+  "books": {
+    "24e43280-2fb3-4415-b9b7-eb74a0e20830": {
+      "id": "24e43280-2fb3-4415-b9b7-eb74a0e20830",
+      "title": "Mary poppins",
+      "author": "mary",
+      "year": 2028,
+      "copies_total": 1,
+      "copies_available": 1
+    },
+    "37094a63-e52e-4e4e-b18c-ae290bed91ff": {
+      "id": "37094a63-e52e-4e4e-b18c-ae290bed91ff",
+      "title": "The Hobbit",
+      "author": "J.R.R. Tolkien",
+      "year": null,
+      "copies_total": 1,
+      "copies_available": 1
+    }
+  },
+  "patrons": {},
+  "loans": {}
+}
