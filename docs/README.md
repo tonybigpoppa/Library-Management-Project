@@ -22,10 +22,6 @@ This project provides a program that:
 - Calculates due dates and overdue items
 - Supports librarians with reports and easy data access
 
-Installation and set up instructions: 
-1. Use vscode to write function
-2. git clone https://github.com/yourusername/library-management-system.git
-3. push functions and all work to github through github desktop
 
 Usage example for Key functions:
 1. calculating due date
@@ -46,55 +42,5 @@ due_status(days_out, max_days=14)	Determines whether an item is overdue or on ti
 get_patron_info(patron_id, name, age, gender)	Returns a patron’s ID, name, age, and gender.
 remove_book(titles, authors, is_checked_out, index)	Removes a book from records and keeps lists aligned.
 reserve_book(user id, book id, reservations) Lets the user reserve a book for a certain of days and keeps track of who reserved the book & when it's due.
-[insert functions here]
-
-Contribution Guidelines for all Team Members:
-1. Add descriptive comments and docstrings to your code.
-2. Test all new functions before committing.
-3. Write clear, informative commit messages.
-4. Add inline comments to clarify logic, especially for loops or conditionals.
-5. Keep your code neat and consistent — use standard indentation (4 spaces) and follow Python best practices (PEP 8)
 
 
-Class Heirarchy Diagram :
-          +------------------------+
-          |      LibraryItem       |  (Abstract)
-          +------------------------+
-          | + title                |
-          | + author               |
-          | + description()        |
-          | + calculate_loan_period() (abstract)
-          +------------+-----------+
-                       |
-     -----------------------------------------
-     |                  |                     |
-+-----------+     +-----------+       +-----------+
-|   Book    |     | Magazine  |       |    DVD    |
-+-----------+     +-----------+       +-----------+
-| + pages   |     | + issue#  |       | + runtime |
-+-----------+     +-----------+       +-----------+
-
-Polyphormism Examples:
-items = [
-    Book("Dune", "Frank Herbert", 412),
-    Magazine("Science Weekly", "Various", 105),
-    DVD("Inception", "Christopher Nolan", 148)
-]
-
-for item in items:
-    print(item.calculate_loan_period())
-
-Composition Example: 
-library = Library()
-library.add_item(Book("1984", "George Orwell", 328))
-library.add_item(Magazine("TIME", "Various", 209))
-
-Usage Example:
-book = Book("The Hobbit", "J.R.R. Tolkien", 310)
-dvd = DVD("Interstellar", "Christopher Nolan", 169)
-
-library = Library()
-library.add_item(book)
-library.add_item(dvd)
-
-library.list_items()
