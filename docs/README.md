@@ -43,4 +43,5 @@ get_patron_info(patron_id, name, age, gender)	Returns a patron’s ID, name, age
 remove_book(titles, authors, is_checked_out, index)	Removes a book from records and keeps lists aligned.
 reserve_book(user id, book id, reservations) Lets the user reserve a book for a certain of days and keeps track of who reserved the book & when it's due.
 
+The presentation link is found under the folder presentation.
 
